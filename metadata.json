@@ -1,0 +1,7 @@
+{
+  "name": "İsis Jewelry",
+  "description": "A high-end luxury jewelry e-commerce application with a modern aesthetic, featuring user profiles, order tracking, and a professional admin dashboard.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
