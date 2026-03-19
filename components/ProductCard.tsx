@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, ShoppingCart, Camera, X, Maximize2, RefreshCw, Camera as CameraIcon, Plus, Minus, Move, Download, Share2, Sparkles } from 'lucide-react';
+import { Heart, ShoppingCart, Camera, X, Maximize2, RefreshCw, Camera as CameraIcon, Plus, Minus, Move, Download, Share2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { useCart, useFavorites } from '../store';
 
@@ -18,6 +18,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isCaptured, setIsCaptured] = useState<string | null>(null);
   const [isFlashing, setIsFlashing] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   
   // AR Calibration State
   const [scale, setScale] = useState(1);
@@ -43,6 +45,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const openProductLink = () => {
     if (!productLink) return;
     window.open(productLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleZoomMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    const clamp = (value: number) => Math.min(100, Math.max(0, value));
+    setZoomPosition({ x: clamp(x), y: clamp(y) });
   };
 
   const handlePrimaryAction = (event?: React.MouseEvent) => {
@@ -291,34 +301,40 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
         </div>
         
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
+        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 pointer-events-none">
           <button 
             disabled={!hasExternalLink && isOutOfStock}
             onClick={handlePrimaryAction}
-            className={`w-full text-white text-[10px] py-4 tracking-widest uppercase flex items-center justify-center gap-2 shadow-xl ${!hasExternalLink && isOutOfStock ? 'bg-gray-400' : 'bg-black hover:bg-gray-900'}`}
+            className={`w-full text-white text-[10px] py-4 tracking-widest uppercase flex items-center justify-center gap-2 shadow-xl pointer-events-auto ${!hasExternalLink && isOutOfStock ? 'bg-gray-400' : 'bg-black hover:bg-gray-900'}`}
           >
             <ShoppingCart size={14} /> {actionLabel}
           </button>
         </div>
 
         {images.length > 1 && (
-          <div className="absolute bottom-3 left-3 right-3 z-10">
-            <div className="flex items-center justify-center gap-2">
-              {images.slice(0, 5).map((image, index) => (
-                <button
-                  key={image + index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(index);
-                  }}
-                  className={`w-10 h-10 rounded-sm overflow-hidden border transition-colors ${
-                    activeImageIndex === index ? 'border-black' : 'border-white/70'
-                  }`}
-                >
-                  <img src={image} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+          <div className="absolute inset-y-0 left-0 right-0 z-20 flex items-center justify-between px-2 pointer-events-none">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+              }}
+              className="pointer-events-auto w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
+              aria-label="Önceki fotoğraf"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex((prev) => (prev + 1) % images.length);
+              }}
+              className="pointer-events-auto w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors"
+              aria-label="Sonraki fotoğraf"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </div>
@@ -351,7 +367,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               >
                 <X size={18} />
               </button>
-              <img src={primaryImage} alt={product.name} className="w-full h-full object-cover" />
+              <div
+                className="relative w-full h-full"
+                onMouseEnter={() => setIsZooming(true)}
+                onMouseLeave={() => setIsZooming(false)}
+                onMouseMove={handleZoomMove}
+              >
+                <img src={primaryImage} alt={product.name} className="w-full h-full object-cover" />
+                <div
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-200"
+                  style={{
+                    opacity: isZooming ? 1 : 0,
+                    backgroundImage: `url(${primaryImage})`,
+                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '200%'
+                  }}
+                />
+              </div>
               {images.length > 1 && (
                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                   {images.map((image, index) => (
@@ -376,7 +409,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   {new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(product.price)}
                 </p>
               </div>
-              <div className="text-sm text-gray-600 leading-relaxed">
+              <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
                 {product.description}
               </div>
               {videos.length > 0 && (
