@@ -72,19 +72,19 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
           </button>
         </div>
         <div className="flex items-center gap-6">
-          <p className="text-[10px] tracking-widest uppercase text-gray-400 hidden sm:block">{sorted.length} ÇorÇ¬n Bulundu</p>
+          <p className="text-[10px] tracking-widest uppercase text-gray-400 hidden sm:block">{sorted.length} Ürün Bulundu</p>
           <div className="relative">
             <button
               className="flex items-center gap-2 text-[10px] tracking-widest uppercase font-bold text-gray-700 hover:text-black transition-colors"
               onClick={() => setIsSortOpen((prev) => !prev)}
             >
-              SŽñrala <ChevronDown size={14} />
+              Sırala <ChevronDown size={14} />
             </button>
             {isSortOpen && (
               <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-100 shadow-lg rounded-xl p-2 z-20">
                 {[
                   { id: 'new', label: 'Yeniler' },
-                  { id: 'popular', label: 'PopÇ¬ler' },
+                  { id: 'popular', label: 'Popüler' },
                   { id: 'price-asc', label: 'Fiyat (Artan)' },
                   { id: 'price-desc', label: 'Fiyat (Azalan)' }
                 ].map((option) => (
@@ -117,14 +117,14 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                 onChange={(event) => setSelectedCategory(event.target.value as Category | 'ALL')}
                 className="w-full border border-gray-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-black/5 outline-none bg-gray-50 transition-all"
               >
-                <option value="ALL">TÇ¬mÇ¬</option>
+                <option value="ALL">Tümü</option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Fiyat AralŽñŠñ (Min)</label>
+              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Fiyat Aralığı (Min)</label>
               <input
                 type="number"
                 min="0"
@@ -134,7 +134,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Fiyat AralŽñŠñ (Max)</label>
+              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Fiyat Aralığı (Max)</label>
               <input
                 type="number"
                 min="0"
@@ -144,7 +144,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">DiŠÿer Filtreler</label>
+              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Diğer Filtreler</label>
               <label className="flex items-center gap-2 text-xs text-gray-600">
                 <input
                   type="checkbox"
@@ -161,7 +161,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                   onChange={(event) => setOnSaleOnly(event.target.checked)}
                   className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
                 />
-                Žøndirimdekiler
+                İndirimdekiler
               </label>
             </div>
           </div>
@@ -170,7 +170,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
 
       {sorted.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-gray-400 text-lg font-light italic">Bu kategoride henÇ¬z Ç¬rÇ¬n bulunmuyor.</p>
+          <p className="text-gray-400 text-lg font-light italic">Bu kategoride henüz ürün bulunmuyor.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">

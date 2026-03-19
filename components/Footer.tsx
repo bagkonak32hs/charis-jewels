@@ -16,9 +16,15 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               Lüks ve zarafeti günlük hayatınıza taşıyan, her parçası hikaye anlatan mücevher ve takı koleksiyonları.
             </p>
             <div className="flex gap-4">
-              <Instagram size={20} className="text-gray-400 hover:text-black cursor-pointer transition-colors" />
-              <Facebook size={20} className="text-gray-400 hover:text-black cursor-pointer transition-colors" />
-              <Twitter size={20} className="text-gray-400 hover:text-black cursor-pointer transition-colors" />
+              <a
+                href="https://www.instagram.com/charisjewelss/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-black transition-colors"
+              >
+                <Instagram size={20} />
+              </a>
+              
             </div>
           </div>
 

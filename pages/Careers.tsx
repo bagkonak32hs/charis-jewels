@@ -8,7 +8,7 @@ const Careers: React.FC = () => {
         <p className="text-gray-500 text-sm tracking-[0.2em] uppercase mb-10">Ekibimize Katilin</p>
         <p className="text-gray-600 text-base leading-relaxed">
           Tasarim, perakende, e-ticaret ve operasyon ekiplerimizde yeni yetenekler ariyoruz.
-          Guncel pozisyonlar icin kariyer@isis.com adresine CV gonderebilirsiniz.
+          Guncel pozisyonlar icin contact@charisjewels.com adresine CV gonderebilirsiniz.
         </p>
       </div>
     </div>
