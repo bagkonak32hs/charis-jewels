@@ -35,6 +35,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isFavoriteProduct = isFavorite(product.id);
   const isLowStock = product.stock !== undefined && product.stock > 0 && product.stock < 5;
   const isOutOfStock = product.stock === 0;
+  const productLink = (product.adminLink ?? '').trim();
+  const hasExternalLink = productLink.length > 0;
+  const actionLabel = hasExternalLink ? 'ÜRÜNE GİT' : isOutOfStock ? 'STOKTA YOK' : 'SEPETE EKLE';
+  const tryOnActionLabel = hasExternalLink ? 'ÜRÜNE GİT' : 'SEPETE EKLE';
+
+  const openProductLink = () => {
+    if (!productLink) return;
+    window.open(productLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const handlePrimaryAction = (event?: React.MouseEvent) => {
+    if (event) event.stopPropagation();
+    if (hasExternalLink) {
+      openProductLink();
+      return;
+    }
+    addToCart(product);
+  };
+
+  const handleTryOnAction = () => {
+    if (hasExternalLink) {
+      openProductLink();
+      return;
+    }
+    addToCart(product);
+    setShowTryOn(false);
+  };
 
   const startCamera = async () => {
     try {
@@ -266,11 +293,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
           <button 
-            disabled={isOutOfStock}
-            onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-            className={`w-full text-white text-[10px] py-4 tracking-widest uppercase flex items-center justify-center gap-2 shadow-xl ${isOutOfStock ? 'bg-gray-400' : 'bg-black hover:bg-gray-900'}`}
+            disabled={!hasExternalLink && isOutOfStock}
+            onClick={handlePrimaryAction}
+            className={`w-full text-white text-[10px] py-4 tracking-widest uppercase flex items-center justify-center gap-2 shadow-xl ${!hasExternalLink && isOutOfStock ? 'bg-gray-400' : 'bg-black hover:bg-gray-900'}`}
           >
-            <ShoppingCart size={14} /> {isOutOfStock ? 'STOKTA YOK' : 'SEPETE EKLE'}
+            <ShoppingCart size={14} /> {actionLabel}
           </button>
         </div>
 
@@ -373,13 +400,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </p>
               )}
               <button
-                onClick={() => addToCart(product)}
-                disabled={isOutOfStock}
+                onClick={handlePrimaryAction}
+                disabled={!hasExternalLink && isOutOfStock}
                 className={`w-full py-4 text-[10px] tracking-widest uppercase font-bold flex items-center justify-center gap-2 ${
-                  isOutOfStock ? 'bg-gray-300 text-gray-600' : 'bg-black text-white hover:bg-gray-900'
+                  !hasExternalLink && isOutOfStock ? 'bg-gray-300 text-gray-600' : 'bg-black text-white hover:bg-gray-900'
                 }`}
               >
-                <ShoppingCart size={14} /> {isOutOfStock ? 'STOKTA YOK' : 'SEPETE EKLE'}
+                <ShoppingCart size={14} /> {actionLabel}
               </button>
             </div>
           </div>
@@ -525,10 +552,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
               <div className="space-y-4 pt-10 border-t border-gray-100">
                 <button 
-                  onClick={() => { addToCart(product); setShowTryOn(false); }}
+                  onClick={handleTryOnAction}
                   className="w-full bg-black text-white py-5 rounded-xl text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-amber-700 transition-all shadow-xl flex items-center justify-center gap-3"
                 >
-                  <ShoppingCart size={16} /> SEPETE EKLE
+                  <ShoppingCart size={16} /> {tryOnActionLabel}
                 </button>
                 <div className="flex gap-3">
                    <button className="flex-1 border border-gray-200 py-4 rounded-xl text-[9px] font-bold tracking-widest uppercase hover:bg-gray-50 flex items-center justify-center gap-2 transition-all"><Share2 size={12}/> PAYLAŞ</button>

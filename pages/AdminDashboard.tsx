@@ -75,6 +75,7 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
     images: [],
     videos: [],
     description: '',
+    adminLink: '',
     stock: 0,
     isNew: false,
     isSale: false
@@ -320,6 +321,7 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
       images: [],
       videos: [],
       description: '',
+      adminLink: '',
       stock: 0,
       isNew: true,
       isSale: false
@@ -360,7 +362,12 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
     }
     const resolvedImages = images.map((url) => uploadedImages[url] ?? url);
     const resolvedVideos = (productForm.videos ?? []).map((url) => uploadedVideos[url] ?? url);
-    const normalizedForm = { ...productForm, images: resolvedImages, videos: resolvedVideos };
+    const normalizedForm = { 
+      ...productForm, 
+      images: resolvedImages, 
+      videos: resolvedVideos,
+      adminLink: productForm.adminLink?.trim() || ''
+    };
     if (editingProduct) {
       const { error } = await updateProduct({ ...editingProduct, ...normalizedForm } as Product);
       if (error) {
@@ -1021,6 +1028,17 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
                              </select>
                           </div>
                        </div>
+
+                       <div className="space-y-2">
+                          <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold block">Ürün Linki (Opsiyonel)</label>
+                          <input
+                             type="url"
+                             value={productForm.adminLink ?? ''}
+                             onChange={(e) => setProductForm({ ...productForm, adminLink: e.target.value })}
+                             className="w-full px-4 py-3 border border-gray-100 rounded-lg text-sm focus:ring-2 focus:ring-black/5 outline-none bg-gray-50 transition-all"
+                             placeholder="https://"
+                          />
+                       </div>
                     </div>
 
                     <div className="space-y-6">
@@ -1219,7 +1237,7 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
             <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Mağaza Adı</label>
-            <input type="text" defaultValue="İsis Jewelry " className="w-full border-b py-3 text-sm focus:outline-none focus:border-black transition-colors" />
+            <input type="text" defaultValue="Charis Jewels " className="w-full border-b py-3 text-sm focus:outline-none focus:border-black transition-colors" />
           </div>
           <div className="space-y-3">
             <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Para Birimi</label>
@@ -1247,8 +1265,8 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
       {/* Admin Sidebar */}
       <aside className="w-64 bg-black text-white shrink-0 hidden lg:block sticky top-0 h-screen overflow-y-auto z-20 shadow-2xl">
         <div className="p-8 border-b border-gray-800 flex items-center gap-3">
-          <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold serif text-xl rounded">𓂀</div>
-          <h1 className="text-xl tracking-[0.2em] serif font-bold">İsis</h1>
+          <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold serif text-xl rounded">⚡</div>
+          <h1 className="text-xl tracking-[0.2em] serif font-bold">Charis Jewels</h1>
         </div>
         <nav className="p-6 space-y-1">
           {[

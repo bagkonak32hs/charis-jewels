@@ -14,6 +14,7 @@ export interface Product {
   isNew?: boolean;
   isSale?: boolean;
   stock?: number;
+  adminLink?: string;
 }
 
 export interface CartItem extends Product {

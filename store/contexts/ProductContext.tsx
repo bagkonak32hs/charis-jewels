@@ -15,6 +15,7 @@ type ProductRow = {
   stock: number | null;
   is_new: boolean | null;
   is_sale: boolean | null;
+  admin_link?: string | null;
   product_images?: { url: string; sort_order: number | null }[];
   product_videos?: { url: string; sort_order: number | null }[];
 };
@@ -31,7 +32,7 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 const PRODUCT_SELECT =
-    'id, name, description, price, cost_price, extra_cost, category, stock, is_new, is_sale, product_images(url, sort_order), product_videos(url, sort_order)';
+    'id, name, description, price, cost_price, extra_cost, category, stock, is_new, is_sale, admin_link, product_images(url, sort_order), product_videos(url, sort_order)';
 
 const mapProductRow = (row: ProductRow): Product => {
     const images = (row.product_images ?? [])
@@ -56,7 +57,8 @@ const mapProductRow = (row: ProductRow): Product => {
       description: row.description ?? '',
       isNew: row.is_new ?? false,
       isSale: row.is_sale ?? false,
-      stock: row.stock ?? 0
+      stock: row.stock ?? 0,
+      adminLink: row.admin_link ?? undefined
     };
 };
 
@@ -171,9 +173,10 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
         category: product.category,
         stock: product.stock ?? 0,
         is_new: product.isNew ?? false,
-        is_sale: product.isSale ?? false
+        is_sale: product.isSale ?? false,
+        admin_link: product.adminLink?.trim() || null
       })
-      .select('id, name, description, price, cost_price, extra_cost, category, stock, is_new, is_sale')
+      .select('id, name, description, price, cost_price, extra_cost, category, stock, is_new, is_sale, admin_link')
       .single();
 
     if (error || !data) {
@@ -224,7 +227,8 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
         category: updatedProduct.category,
         stock: updatedProduct.stock ?? 0,
         is_new: updatedProduct.isNew ?? false,
-        is_sale: updatedProduct.isSale ?? false
+        is_sale: updatedProduct.isSale ?? false,
+        admin_link: updatedProduct.adminLink?.trim() || null
       })
       .eq('id', updatedProduct.id);
 
