@@ -1324,7 +1324,7 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Admin Sidebar */}
-      <aside className="w-64 bg-black text-white shrink-0 hidden lg:block sticky top-0 h-screen overflow-y-auto z-20 shadow-2xl">
+      <aside className="w-64 bg-black text-white shrink-0 block sticky top-0 h-screen overflow-y-auto z-20 shadow-2xl">
         <div className="p-8 border-b border-gray-800 flex items-center gap-3">
           <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold serif text-xl rounded">⚡</div>
           <h1 className="text-xl tracking-[0.2em] serif font-bold">Charis Jewels</h1>
