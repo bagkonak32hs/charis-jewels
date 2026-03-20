@@ -16,6 +16,7 @@ import {
   Plus, 
   Edit, 
   Trash2, 
+  Share2,
   Save, 
   ArrowLeft,
   User,
@@ -243,6 +244,65 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
     const normalized = name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
     const safe = normalized.replace(/[^a-zA-Z0-9._-]/g, '_');
     return safe.length > 0 ? safe : `file_${Date.now()}`;
+  };
+
+  const buildShareText = (product: Product) => {
+    const price = formatCurrency(product.price ?? 0);
+    const link = (product.adminLink ?? '').trim();
+    return link ? `${product.name} • ${price}\n${link}` : `${product.name} • ${price}`;
+  };
+
+  const resolveShareFile = async (imageUrl: string, productName: string) => {
+    const response = await fetch(imageUrl, { mode: 'cors' });
+    if (!response.ok) throw new Error('share-image-download-failed');
+    const blob = await response.blob();
+    const extension = blob.type === 'image/png'
+      ? 'png'
+      : blob.type === 'image/webp'
+        ? 'webp'
+        : blob.type === 'image/gif'
+          ? 'gif'
+          : 'jpg';
+    const fileName = `${sanitizeFileName(productName || 'urun')}.${extension}`;
+    return new File([blob], fileName, { type: blob.type || 'image/jpeg' });
+  };
+
+  const handleShareProduct = async (product: Product) => {
+    const shareText = buildShareText(product);
+    const shareData: ShareData = {
+      title: product.name,
+      text: shareText,
+    };
+    const shareUrl = (product.adminLink ?? '').trim();
+    if (shareUrl) shareData.url = shareUrl;
+
+    const imageUrl = product.images?.[0];
+    if (imageUrl) {
+      try {
+        const file = await resolveShareFile(imageUrl, product.name);
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          shareData.files = [file];
+        }
+      } catch (error) {
+        // Fallback to text-only share if image fetch fails.
+      }
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+      }
+    }
+
+    if (imageUrl) {
+      window.open(imageUrl, '_blank', 'noopener,noreferrer');
+      alert('Paylaşım desteklenmedi. Görsel yeni sekmede açıldı; Instagram uygulamasında gönderi veya hikaye olarak paylaşabilirsiniz.');
+    } else {
+      alert('Paylaşım bu cihazda desteklenmiyor.');
+    }
   };
 
   const uploadProductImages = async (queue: Array<{ file: File; tempUrl: string }>, folder: string) => {
@@ -927,6 +987,7 @@ const AdminDashboard: React.FC<{ onExitToStore: () => void; onLogout: () => void
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
                     <button onClick={() => openEditProductModal(product)} className="p-1.5 hover:bg-blue-50 text-blue-600 rounded transition-colors"><Edit size={14}/></button>
+                    <button onClick={() => handleShareProduct(product)} className="p-1.5 hover:bg-gray-50 text-gray-600 rounded transition-colors"><Share2 size={14}/></button>
                     <button onClick={() => handleDeleteProduct(product.id)} className="p-1.5 hover:bg-red-50 text-red-600 rounded transition-colors"><Trash2 size={14}/></button>
                   </div>
                 </td>
